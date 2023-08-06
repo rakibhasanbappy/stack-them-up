@@ -6,11 +6,12 @@ const scoreDiv = document.getElementById('score');
 let scene, camera, renderer;
 let blocks = [];
 let isStarted = false;
+let score = 0;
+
 const initBlockWidth = 8;
 const initBlockDepth = 8;
 const initBlockHeight = 2;
 
-let score = 0;
 
 function init() {
     scene = new THREE.Scene();
@@ -74,11 +75,30 @@ function generateBlock(x, y, z, width, depth) {
 
 window.addEventListener('click', (event) => {
     if (isStarted) {
+        var newX, newZ, newDirection;
+
         score = blocks.length - 1;
         scoreDiv.innerHTML = 'Score: ' + score;
         scoreDiv.style.display = 'block';
 
-        addBlock(-40, 0, initBlockWidth, initBlockDepth, "x");
+        const topBlock = blocks[blocks.length - 1];
+        const topBlockDirection = topBlock.direction;
+
+        if (topBlockDirection == 'x') {
+            newX = 0;
+            newZ = -40;
+            newDirection = 'z';
+        }
+        else {
+            newX = -40;
+            newZ = 0;
+            newDirection = 'x';
+        }
+
+        const newWidth = initBlockWidth
+        const newDepth = initBlockDepth
+
+        addBlock(newX, newZ, newWidth, newDepth, newDirection);
     }
     else {
         isStarted = true;
