@@ -1,11 +1,16 @@
 import * as THREE from 'three';
 
+const infoDiv = document.getElementById('info');
+const scoreDiv = document.getElementById('score');
+
 let scene, camera, renderer;
 let blocks = [];
 let isStarted = false;
 const initBlockWidth = 8;
 const initBlockDepth = 8;
 const initBlockHeight = 2;
+
+let score = 0;
 
 function init() {
     scene = new THREE.Scene();
@@ -69,11 +74,17 @@ function generateBlock(x, y, z, width, depth) {
 
 window.addEventListener('click', (event) => {
     if (isStarted) {
+        score = blocks.length - 1;
+        scoreDiv.innerHTML = 'Score: ' + score;
+        scoreDiv.style.display = 'block';
+
         addBlock(-40, 0, initBlockWidth, initBlockDepth, "x");
     }
     else {
         isStarted = true;
+        infoDiv.style.display = 'none';
         renderer.setAnimationLoop(animation);
+
     }
 });
 
