@@ -15,7 +15,8 @@ const initBlockHeight = 2;
 
 function init() {
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x82eefd);
+    //scene.background = new THREE.Color(0x82eefd);
+    scene.background = new THREE.Color(`hsl(${180 + blocks.length * 3}, 100%, 80%)`);
 
     addBlock(0, 0, initBlockWidth, initBlockDepth);
     addBlock(-40, 0, initBlockWidth, initBlockDepth, "x");
@@ -60,11 +61,14 @@ function addBlock(x, z, width, depth, direction) {
 function generateBlock(x, y, z, width, depth) {
     const geometry = new THREE.BoxGeometry(width, initBlockHeight, depth);
 
-    const color = new THREE.Color(Math.random(), Math.random(), Math.random());
+    //const color = new THREE.Color(Math.random(), Math.random(), Math.random());
+    const color = new THREE.Color(`hsl(${180 + blocks.length * 3}, 100%, 65%)`);
     const material = new THREE.MeshPhongMaterial({ color });
     const block = new THREE.Mesh(geometry, material);
     block.position.set(x, y, z);
     scene.add(block);
+
+    scene.background = new THREE.Color(`hsl(${180 + blocks.length * 3}, 100%, 80%)`);
 
     return {
         threejs: block,
