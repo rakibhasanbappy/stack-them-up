@@ -12,14 +12,65 @@ const initBlockWidth = 8;
 const initBlockDepth = 8;
 const initBlockHeight = 2;
 
+var movementSpeed = 0.2;
+var totalObjects = 50;
+var objectSize = window.innerWidth / 500;
+var dirs = [];
+var parts = [];
+
+class ExplodeAnimation {
+    constructor(x, y, z, color) {
+        var geometry = new THREE.BufferGeometry();
+        var vertices = [];
+
+        for (let i = 0; i < totalObjects; i++) {
+            var vertex = new THREE.Vector3();
+            vertex.x = x;
+            vertex.y = y;
+            vertex.z = z;
+            vertices.push(vertex.x, vertex.y, vertex.z);
+            dirs.push({
+                x: (Math.random() * movementSpeed) - (movementSpeed / 2),
+                y: (Math.random() * movementSpeed) - (movementSpeed / 2),
+                z: (Math.random() * movementSpeed) - (movementSpeed / 2)
+            });
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+        var material = new THREE.PointsMaterial({ size: objectSize, color: color });
+        var particles = new THREE.Points(geometry, material);
+        this.object = particles;
+        this.status = true;
+        this.xDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+        this.yDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+        this.zDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+        scene.add(this.object);
+
+        this.update = function () {
+            if (this.status == true) {
+                var pCount = totalObjects;
+                var positions = this.object.geometry.attributes.position.array;
+                while (pCount--) {
+                    positions[pCount * 3] += dirs[pCount].x;
+                    positions[pCount * 3 + 1] += dirs[pCount].y;
+                    positions[pCount * 3 + 2] += dirs[pCount].z;
+                }
+                this.object.geometry.attributes.position.needsUpdate = true;
+            }
+        };
+    }
+}
 
 function init() {
     scene = new THREE.Scene();
     //scene.background = new THREE.Color(0x82eefd);
-    scene.background = new THREE.Color(`hsl(${180 + blocks.length * 3}, 100%, 80%)`);
+
+    //var texture = new THREE.TextureLoader().load('background.jpg');
+    //scene.background = texture;
 
     addBlock(0, 0, initBlockWidth, initBlockDepth);
-    addBlock(-40, 0, initBlockWidth, initBlockDepth, "x");
+    addBlock(-45, 0, initBlockWidth, initBlockDepth, "x");
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
@@ -46,7 +97,18 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.render(scene, camera);
 
+    render();
+
     document.body.appendChild(renderer.domElement);
+}
+
+function render() {
+    requestAnimationFrame(render);
+    var pCount = parts.length;
+    while (pCount--) {
+        parts[pCount].update();
+    }
+    renderer.render(scene, camera);
 }
 
 function addBlock(x, z, width, depth, direction) {
@@ -59,16 +121,15 @@ function addBlock(x, z, width, depth, direction) {
 }
 
 function generateBlock(x, y, z, width, depth) {
-    const geometry = new THREE.BoxGeometry(width, initBlockHeight, depth);
+    scene.background = new THREE.Color(`hsl(${180 + blocks.length * 4}, 100%, 85%)`);
 
+    const geometry = new THREE.BoxGeometry(width, initBlockHeight, depth);
     //const color = new THREE.Color(Math.random(), Math.random(), Math.random());
-    const color = new THREE.Color(`hsl(${180 + blocks.length * 3}, 100%, 65%)`);
+    const color = new THREE.Color(`hsl(${180 + blocks.length * 4}, 100%, 65%)`);
     const material = new THREE.MeshPhongMaterial({ color });
     const block = new THREE.Mesh(geometry, material);
     block.position.set(x, y, z);
     scene.add(block);
-
-    scene.background = new THREE.Color(`hsl(${180 + blocks.length * 3}, 100%, 80%)`);
 
     return {
         threejs: block,
@@ -88,13 +149,15 @@ window.addEventListener('click', (event) => {
         const topBlock = blocks[blocks.length - 1];
         const topBlockDirection = topBlock.direction;
 
+        parts.push(new ExplodeAnimation(topBlock.threejs.position.x, topBlock.threejs.position.y - 2, topBlock.threejs.position.z, new THREE.Color(`hsl(${180 + blocks.length * 4}, 100%, 65%)`)));
+
         if (topBlockDirection == 'x') {
             newX = 0;
-            newZ = -40;
+            newZ = -45;
             newDirection = 'z';
         }
         else {
-            newX = -40;
+            newX = -45;
             newZ = 0;
             newDirection = 'x';
         }
@@ -123,5 +186,21 @@ function animation() {
     }
     renderer.render(scene, camera);
 }
+
+window.addEventListener('resize', () => {
+    const width = 50;
+    const height = width * (window.innerHeight / window.innerWidth);
+    camera.left = width / -2;
+    camera.right = width / 2;
+    camera.top = height / 2;
+    camera.bottom = height / -2;
+    camera.updateProjectionMatrix();
+
+    //update objectSize
+    objectSize = window.innerWidth / 500;
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
 
 init();
