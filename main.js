@@ -64,10 +64,7 @@ class ExplodeAnimation {
 
 function init() {
     scene = new THREE.Scene();
-    //scene.background = new THREE.Color(0x82eefd);
 
-    //var texture = new THREE.TextureLoader().load('background.jpg');
-    //scene.background = texture;
 
     addBlock(0, 0, initBlockWidth, initBlockDepth);
     addBlock(-45, 0, initBlockWidth, initBlockDepth, "x");
@@ -87,7 +84,7 @@ function init() {
         height / 2,
         height / -2,
         1,
-        1000
+        1000 
     );
 
     camera.position.set(20, 20, 20);
@@ -121,11 +118,24 @@ function addBlock(x, z, width, depth, direction) {
 }
 
 function generateBlock(x, y, z, width, depth) {
-    scene.background = new THREE.Color(`hsl(${180 + blocks.length * 4}, 100%, 85%)`);
+  
+    // const topColor = 0x003366; // Top color of the gradient
+    // const bottomColor = 0x66ccff; // Bottom color of the gradient
+    // const gradientTexture = THREE.SceneUtils.createGradientTexture(topColor, bottomColor);
+
+    // const gradientMaterial = new THREE.MeshBasicMaterial({ map: gradientTexture });
+    // const gradientGeometry = new THREE.PlaneGeometry(2, 2); // Full-screen quad
+
+    // const gradientMesh = new THREE.Mesh(gradientGeometry, gradientMaterial);
+    // scene.add(gradientMesh);
+    // var backgroundTexture = loader.load( 'https://i.imgur.com/upWSJlY.jpg' );
+    // scene.background = backgroundTexture;
+    
+    scene.background = new THREE.Color(`hsl(${180 + blocks.length * 10}, 100%, 85%)`);
 
     const geometry = new THREE.BoxGeometry(width, initBlockHeight, depth);
     //const color = new THREE.Color(Math.random(), Math.random(), Math.random());
-    const color = new THREE.Color(`hsl(${180 + blocks.length * 4}, 100%, 65%)`);
+    const color = new THREE.Color(`hsl(${180 + blocks.length * 10}, 100%, 65%)`);
     const material = new THREE.MeshPhongMaterial({ color });
     const block = new THREE.Mesh(geometry, material);
     block.position.set(x, y, z);
@@ -176,7 +186,7 @@ window.addEventListener('click', (event) => {
 });
 
 function animation() {
-    const blockSpeed = 0.2;
+    const blockSpeed = 0.2*Math.log(score+2);
 
     const topBlock = blocks[blocks.length - 1];
     topBlock.threejs.position[topBlock.direction] += blockSpeed;
