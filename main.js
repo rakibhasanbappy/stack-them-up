@@ -3,6 +3,8 @@ import * as THREE from 'three';
 
 const infoDiv = document.getElementById('info');
 const scoreDiv = document.getElementById('score');
+const resultsElement = document.getElementById("results");
+const finalScore = document.getElementById("finalScore");
 
 let scene, camera, renderer, world;
 let blocks = [];
@@ -65,6 +67,7 @@ class ExplodeAnimation {
 }
 
 function init() {
+    
 
     //Initializing CannonJS
     world = new CANNON.World();
@@ -209,9 +212,6 @@ window.addEventListener('click', (event) => {
     if (isStarted) {
         var newX, newZ, newDirection;
 
-        score = blocks.length - 1;
-        scoreDiv.innerHTML = 'Score: ' + score;
-        scoreDiv.style.display = 'block';
 
         const topBlock = blocks[blocks.length - 1];
         const topBlockDirection = topBlock.direction;
@@ -226,11 +226,14 @@ window.addEventListener('click', (event) => {
         const overhangSize = Math.abs(delta);
         const overlap = size - overhangSize;
 
-        // console.log(overlap);
       
         if (overlap > 0) {
 
             cutBox(topBlock, overlap, size, delta);
+
+            score = blocks.length - 1;
+            scoreDiv.innerHTML = 'Score: ' + score;
+            scoreDiv.style.display = 'block';
         
             //Overhang
             const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
@@ -258,6 +261,9 @@ window.addEventListener('click', (event) => {
 
             addBlock(newX, newZ, newWidth, newDepth, newDirection);
         }
+        else{
+            missedTheSpot();
+        }
     }
     else {
         isStarted = true;
@@ -266,6 +272,28 @@ window.addEventListener('click', (event) => {
 
     }
 });
+
+
+
+function missedTheSpot() {
+    const topBlock = blocks[blocks.length - 1];
+
+
+    // Turn to top layer into an overhang and let it fall down
+    addOverhang(
+      topBlock.threejs.position.x,
+      topBlock.threejs.position.z,
+      topBlock.width,
+      topBlock.depth
+    );
+    
+    scene.remove(topBlock.threejs);
+    
+    finalScore.innerHTML = 'Your Final Score: ' + score;
+    resultsElement.style.display = 'block';
+    
+}
+
 
 function animation() {
     const blockSpeed = 0.2*Math.log(score+2);
