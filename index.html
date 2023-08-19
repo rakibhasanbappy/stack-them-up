@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Stack Them Up!</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
 
-<head>
-	<meta charset="utf-8">
-	<title>Stack Them Up!</title>
-	<link rel="stylesheet" type="text/css" href="styles.css">
-</head>
-
-<body>
-	<div id="info">Click to Start!</div>
-	<div id="score">Score: </div>
-	<script type="module" src="/main.js"></script>
-</body>
-
+  <body>
+    <div id="info">Click to Start!</div>
+    <div id="score">Score:</div>
+    <div id="results">
+      <div class="content">
+        <p>You missed the block!!!</p>
+        <p id="finalScore"></p>
+        <p>To restart the game press Ctr+R</p>
+      </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
 </html>
